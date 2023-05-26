@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
-            $table->string('code', 10);
+            $table->string('code', 30);
             $table->string('kbn', 1)->default(0);
             $table->string('title', 200)->default("");
             $table->integer('frame_index')->default(0);
