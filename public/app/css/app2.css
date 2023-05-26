@@ -1,0 +1,233 @@
+@charset "UTF-8";
+/* 共通 */
+body {
+  color: #808080 !important;
+  border-color: #808080 !important;
+}
+
+.midashiBC {
+  background-color: #a2d7dd;
+}
+
+.postBase {
+  text-align: left;
+  background-color: #fffffc;
+  border: 1px solid #a2d7dd;
+}
+
+.postHeader {
+  background-color: #a2d7dd;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  color: #fffffc;
+}
+
+.inputBase {
+  border: 1px solid #808080;
+  border-radius: 6px;
+  color: #808080 !important;
+}
+
+.bgColorHF {
+  background-color: #e7e7eb;
+}
+
+.bgColorLine {
+  background-color: #522f60;
+}
+
+.bgColorBase {
+  background-color: #fbfaf5;
+}
+
+.errMsg {
+  color: #F39696;
+  margin: 0 0;
+}
+
+.gameLink {
+  cursor: pointer;
+  color: #808080;
+}
+
+.gameLink:hover {
+  color: #522f60;
+}
+
+.gameLink:active {
+  color: #522f60;
+}
+
+.link {
+  cursor: pointer;
+  color: #522f60;
+}
+
+.linkRed {
+  cursor: pointer;
+  color: #a22041;
+}
+
+.caution {
+  font-size: 8px;
+}
+
+input {
+  color: #808080 !important;
+}
+
+textarea {
+  color: #808080;
+}
+
+.header {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+.grayBar {
+  background-color: #808080;
+  height: 2px;
+  opacity: 0.1;
+  margin: 8px 0 8px 0;
+}
+
+.form-check-input:checked {
+  background-color: #96C9F3;
+  border-color: #96C9F3;
+}
+
+input::-moz-placeholder, textarea::-moz-placeholder {
+  color: #AFAFAF !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #AFAFAF !important;
+}
+
+:-ms-input-placeholder {
+  color: #AFAFAF !important;
+}
+
+.inputBtn {
+  border: 1px solid #808080 !important;
+  color: #808080 !important;
+  box-shadow: none !important;
+}
+
+.btnBaseSearch {
+  /* display: block; */
+  /* padding: 5px 10px 5px 10px; */
+  text-decoration: none;
+  color: #522f60;
+  border-radius: 6px;
+  border: solid 1px #522f60;
+  background-color: #fffffc;
+  padding: 5px 10px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0px 0 rgba(0, 0, 0, 0.2);
+}
+
+.btnBase {
+  /* display: block; */
+  /* padding: 5px 10px 5px 10px; */
+  text-decoration: none;
+  color: #522f60;
+  border-radius: 6px;
+  border: solid 1px #522f60;
+  background-color: #fffffc;
+  padding: 5px 10px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0px 0 rgba(0, 0, 0, 0.2);
+}
+
+.btnBase > span {
+  margin: 20px 10px 20px 10px;
+}
+
+.btnBase > p {
+  margin: 0px;
+}
+
+.btnBase:active {
+  background-color: #522f60;
+  color: #fffffc;
+}
+
+.popupA {
+  background-color: #fbfaf5;
+  border-radius: 10px;
+}
+
+.popupB {
+  background-color: transparent;
+}
+
+.shadow {
+  box-shadow: 3px 3px 0px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+#overlay {
+  /*要素を重ねた時の順番*/
+  z-index: 9999;
+  /*画面全体を覆う設定*/
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* background-color:rgba(255, 255, 255, 0.5); */
+  background-color: rgba(0, 0, 0, 0.5);
+  /*画面の中央に要素を表示させる設定*/
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#content {
+  z-index: 9998;
+  padding: 1em;
+  /* background:#fff; */
+  border-radius: 6px;
+}
+
+.modalBg {
+  overflow-y: hidden;
+}
+
+.page-main {
+  /* display:inline; */
+  padding: 0;
+}
+
+.page-li {
+  display: inline;
+}
+
+.page-li-in {
+  padding: 10px 15px;
+  color: #C0BFBF;
+  text-decoration: none;
+}
+
+.page-li-in:hover {
+  color: #C0BFBF;
+}
+
+.page-cur {
+  border-radius: 50%;
+  color: #fffffc;
+  background-color: #a2d7dd;
+}

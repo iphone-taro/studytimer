@@ -1,0 +1,44 @@
+.sp_line_ss {height : 5px;}
+.sp_line_s  {height : 8px;}
+.sp_line_m  {height : 13px;}
+.sp_line_l  {height : 20px;}
+.sp_line_xl {height : 30px;}
+.font_xxl   {font-size: 18px; margin:0px}
+.font_xl    {font-size: 16px; margin:0px}
+.font_l     {font-size: 14px; margin:0px}
+.font_m     {font-size: 12px; margin:0px}
+.font_s     {font-size: 10px; margin:0px}
+.font_ss    {font-size: 8px; margin:0px}
+.font_b     {font-weight:bold;}
+
+.mainArea {
+    width:100%;
+}
+@media screen and (min-width : 1020px) {
+    .mainArea {
+        width: 1000px;
+        margin:auto;
+    }
+}
+
+.inputBase {
+    border: 1px solid #808080;
+    border-radius: 6px;
+    color: #808080 !important;
+}
+
+.absoluteCenterX {
+    transform: translateX(-50%) !important;
+    -webkit-transform: translateX(-50%) !important;
+    -ms-transform: translateX(-50%) !important;
+}
+.absoluteCenterY {
+    transform: translateY(-50%) !important;
+    -webkit-transform: translateY(-50%) !important;
+    -ms-transform: translateY(-50%) !important;
+}
+.absoluteCenterXY {
+    transform: translate(-50%, -50%) !important;
+    -webkit-transform: translate(-50%, -50%) !important;
+    -ms-transform: translate(-50%, -50%) !important;
+}
