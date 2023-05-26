@@ -7,6 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Report extends Model
 {
-    protected $primaryKey = 'no'; //pkの変更
     use HasFactory;
 }

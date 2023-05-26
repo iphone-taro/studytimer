@@ -14,11 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('reports', function (Blueprint $table) {
-            $table->integer('no')->autoIncrement();
-            $table->string('user_id', 20);
-            $table->string('post_id');
-            $table->string('comment', 300);
-            $table->integer('through')->default(0);
+            $table->integer('id')->autoIncrement();
+            $table->string('code', 10);
+            $table->string('kbn', 1)->default(0);
+            $table->string('title', 200)->default("");
+            $table->integer('frame_index')->default(0);
+            $table->integer('study_time')->default(0);
+            $table->integer('is_access')->default(0);
             $table->timestamps();
         });
     }
