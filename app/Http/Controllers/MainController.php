@@ -29,6 +29,11 @@ class MainController extends Controller
             return view('spa.app')->with(['title' => "共通です", 'card' => 'card_common']);
         }
 
+        //すでに画像がある場合
+        if (file_exists(realpath("./") . '/storage/card/card_' . $code . '.jpg')) {
+            return view('spa.app')->with(['title' => "使いまわし" . $code, 'card' => 'card_' . $code]);
+        }
+
         $cardFrameIndex = $reportData->frame_index;
         $cardKbn = $reportData->kbn; //0:開始 1:終了
         $title = $reportData->title;
@@ -70,7 +75,7 @@ class MainController extends Controller
         $reportData->is_access = 1;
         $reportData->save();
 
-        return view('spa.app')->with(['title' => $code, 'card' => 'card_' . $code]);
+        return view('spa.app')->with(['title' => "新規作成" . $code, 'card' => 'card_' . $code]);
     }
 
     //
