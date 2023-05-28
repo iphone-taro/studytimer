@@ -16,6 +16,8 @@ use App\Consts\Consts;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/api/abc', [MainController::class, 'abc']);
+
 Route::post('/api/reportStudy', [MainController::class, 'reportStudy']);
 
 Route::get('/{code}', [MainController::class, 'test']);
