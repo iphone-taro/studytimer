@@ -26,7 +26,7 @@ class MainController extends Controller
 
         if ($reportData == null) {
             //存在しないコードの場合
-            return view('spa.app')->with(['title' => "", 'card' => 'card_common']);
+            return view('spa.app')->with(['title' => Consts::BASE_TITLE, 'card' => 'card_common']);
         }
 
         Report::where("code", $code)->increment('view_count');
@@ -141,6 +141,7 @@ class MainController extends Controller
         }
 
         return view('spa.app')->with(['title' => "新規作成" . $code, 'card' => 'card_' . $code]);
+        // return view('spa.app')->with(['title' => "新規作成" . $code, 'card' => 'card_' . $code]);
     }
 
     //

@@ -21,9 +21,9 @@ class Consts
 
     public const API_FAILED_EXEPTION = "900";
 
-    public const BASE_TITLE = "ゲームフレンドコード交換掲示板";
-    public const BASE_DESCRIPTION = "このサイトはPC,スマホアプリ,家庭用ゲーム機などのゲームのフレンドコードを交換する掲示板です。素敵な友達を見つけて一緒にゲームを楽しみましょう。";
-    public const BASE_SEO = "ゲーム,掲示板,フレンド募集,友達,ID交換,PC,PS4,PS5,SWITCH,XBOX,スマホ,アプリ";
+    public const BASE_TITLE = "『まなんだー』おしらせつき勉強タイマー";
+    public const BASE_DESCRIPTION = "受験や資格、学校の課題などの勉強タイマー。開始と終了をみんなにおしらせ！";
+    public const BASE_SEO = "勉強,受験,課題,宿題,資格,高校,大学,中学,タイマー,学校,共有,JC,JK,study,timer";
 
 
 
