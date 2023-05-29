@@ -19,8 +19,9 @@ use App\Consts\Consts;
 Route::get('/api/abc', [MainController::class, 'abc']);
 
 Route::post('/api/reportStudy', [MainController::class, 'reportStudy']);
+Route::get('/api/initAction', [MainController::class, 'initAction']);
 
-Route::get('/{code}', [MainController::class, 'test']);
+Route::get('/{code}', [MainController::class, 'access']);
 
 Route::get('/{any}', function () {
     return view('spa.app')->with(['title' => "なにもなし", 'card' => "card_common"]);

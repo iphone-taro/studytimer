@@ -17,69 +17,21 @@ use ImagickDraw;
 
 class MainController extends Controller
 {
-
-    public function abc () {
-        $title = "あいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえお";
-        $cardBase = new Imagick();
-        $draw = new ImagickDraw();
-        $draw->setFont(realpath("./") . "/storage/KosugiMaru-Regular.ttf");
-        $draw->setFillColor("rgb(136, 136, 136)");
-        $draw->setTextInterlineSpacing(5);
-        $draw->setGravity(Imagick::GRAVITY_CENTER);
-
-        $titleWidth = 600 * 0.75;
-        $array = array();
-        $fontVal = 54;
-        $flg = true;
-        while ($flg) {
-            $draw->setFontSize($fontVal);
-            $metrics = $cardBase->queryFontMetrics($draw, $title);
-            $array[] = $fontVal . " " . $metrics['textWidth'];
-            
-            if ($metrics["textWidth"] > $titleWidth) {
-                $fontVal--;
-                if ($fontVal == 29) {
-                    $flg = false;
-                }
-            } else {
-                $flg = false;
-            }
-        }
-
-        if ($fontVal == 29) {
-            //折り返しが必要
-            $draw->setFontSize(30);
-
-            //1文字ずつ追加して、サイズを超えたら改行を入れる？
-            $newStr = "";
-            for ($i=0; $i < mb_strlen($title); $i++) { 
-                $str = $newStr . mb_substr($title, $i, 1);
-                $metrics = $cardBase->queryFontMetrics($draw, $str);
-
-                if ($metrics["textWidth"] > $titleWidth) {
-                    //超えたら前に改行を入れる
-                    $str = $newStr . "\n" . mb_substr($title, $i, 1);
-                }
-                $newStr = $str;
-            }
-            $title = $newStr;
-        }
-        dd($fontVal);
-    }
-
     //
     //投稿ページ初期処理
     //
-    public function test ($code) {
+    public function access ($code) {
         //DBから情報を取得
         $reportData = Report::where("code", $code)->first();
 
         if ($reportData == null) {
             //存在しないコードの場合
-            return view('spa.app')->with(['title' => "共通です", 'card' => 'card_common']);
+            return view('spa.app')->with(['title' => "", 'card' => 'card_common']);
         }
 
-        // //すでに画像がある場合
+        Report::where("code", $code)->increment('view_count');
+
+        //すでに画像がある場合
         // if (file_exists(realpath("./") . '/storage/card/card_' . $code . '.jpg')) {
         //     return view('spa.app')->with(['title' => "使いまわし" . $code, 'card' => 'card_' . $code]);
         // }
@@ -95,16 +47,14 @@ class MainController extends Controller
         $draw = new ImagickDraw();
         //文字
         //目的
-        $draw->setFont(realpath("./") . "/storage/KosugiMaru-Regular.ttf");
+        $draw->setFont(realpath("./") . "/storage/ZenMaruGothic-Regular.ttf");
         $draw->setFillColor("rgb(136, 136, 136)");
-        $draw->setTextInterlineSpacing(5);
-        $draw->setGravity(Imagick::GRAVITY_CENTER);
-
-        $title = "あいうえおあいうえおあいうえおあいうえおあ";
+        $draw->setTextInterlineSpacing(2);
+        $draw->setGravity(Imagick::GRAVITY_CENTER); 
 
         $titleWidth = 600 * 0.75;
         $array = array();
-        $fontVal = 54;
+        $fontVal = 40;
         $flg = true;
         while ($flg) {
             $draw->setFontSize($fontVal);
@@ -113,7 +63,7 @@ class MainController extends Controller
             
             if ($metrics["textWidth"] > $titleWidth) {
                 $fontVal--;
-                if ($fontVal == 29) {
+                if ($fontVal == 24) {
                     $flg = false;
                 }
             } else {
@@ -121,9 +71,9 @@ class MainController extends Controller
             }
         }
 
-        if ($fontVal == 29) {
+        if ($fontVal == 24) {
             //折り返しが必要
-            $draw->setFontSize(30);
+            $draw->setFontSize(25);
 
             //1文字ずつ追加して、サイズを超えたら改行を入れる？
             $newStr = "";
@@ -141,7 +91,7 @@ class MainController extends Controller
         }
         $cardBase->annotateImage($draw, 0, -60, 0, $title);
 
-        $draw->setFontSize(30);
+        $draw->setFontSize(20);
         if ($cardKbn == 0) {
             //開始
             $cardBase->annotateImage($draw, 0, 18, 0, "の勉強を開始しました");
@@ -167,7 +117,7 @@ class MainController extends Controller
 
             $draw->setFontSize(20);
             $draw->setGravity(Imagick::GRAVITY_SOUTHEAST );
-            $cardBase->annotateImage($draw, 70, 60, 0, $timeStr);
+            $cardBase->annotateImage($draw, 30, 55, 0, $timeStr);
         }
 
         $cardBase->writeImage(realpath("./") . '/storage/card/card_' . $code . '.jpg');
@@ -175,7 +125,32 @@ class MainController extends Controller
         $reportData->is_access = 1;
         $reportData->save();
 
+        //アクセス前に作成された画像のデータを削除
+        $otherReportList = Report::where("code", '<>', $code)->where("is_access", "1")->get();
+        foreach ($otherReportList as $data) {
+            //ファイルが存在する場合は削除
+            $oCode = $data->code;
+            if (file_exists(realpath("./") . '/storage/card/card_' . $oCode . '.jpg')) {
+                //削除
+                $delFlg = unlink(realpath("./") . '/storage/card/card_' . $oCode . '.jpg');
+                if ($delFlg) {
+                    $data->is_access = 2;
+                    $data->save();
+                }
+            }
+        }
+
         return view('spa.app')->with(['title' => "新規作成" . $code, 'card' => 'card_' . $code]);
+    }
+
+    //
+    //初期処理
+    //
+    public function initAction (Request $request) {
+        $reportList = Report::where('study_time', '>', 6000)->where('kbn', '1')
+        ->select('title', 'study_time as time', 'created_at as date')->get();
+
+        return response()->json(['reportList' => $reportList]);
     }
 
     //

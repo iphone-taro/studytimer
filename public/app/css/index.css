@@ -14,9 +14,9 @@
 .mainArea {
     width:100%;
 }
-@media screen and (min-width : 1020px) {
+@media screen and (min-width : 700px) {
     .mainArea {
-        width: 1000px;
+        width: 700px;
         margin:auto;
     }
 }

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('frame_index')->default(0);
             $table->integer('study_time')->default(0);
             $table->integer('is_access')->default(0);
+            $table->integer('view_count')->default(0);
             $table->timestamps();
         });
     }
