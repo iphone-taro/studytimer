@@ -22,6 +22,7 @@ Route::post('/api/reportStudy', [MainController::class, 'reportStudy']);
 Route::get('/api/initAction', [MainController::class, 'initAction']);
 
 Route::get('/{code}', [MainController::class, 'access']);
+Route::get('/api/getAbs', [MainController::class, 'getAbs']);
 
 Route::get('/{any}', function () {
     return view('spa.app')->with(['title' => "なにもなし", 'card' => "card_common"]);
