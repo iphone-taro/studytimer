@@ -61,7 +61,7 @@ class MainController extends Controller
         //文字
         //目的
         $draw->setFont(realpath("./") . "/storage/ZenMaruGothic-Regular.ttf");
-        $draw->setFillColor("rgb(136, 136, 136)");
+        $draw->setFillColor("rgb(58, 58, 58)");
         $draw->setTextInterlineSpacing(2);
         $draw->setGravity(Imagick::GRAVITY_CENTER); 
 
