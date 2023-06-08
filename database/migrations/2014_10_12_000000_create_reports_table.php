@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('code', 30);
             $table->string('kbn', 1)->default(0);
             $table->string('title', 200)->default("");
-            $table->integer('frame_index')->default(0);
+            $table->string('frame_index', 20)->default("");
             $table->integer('study_time')->default(0);
             $table->integer('is_access')->default(0);
             $table->integer('view_count')->default(0);
