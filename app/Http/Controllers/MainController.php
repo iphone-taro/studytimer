@@ -54,6 +54,9 @@ class MainController extends Controller
         //カードを作成
         //フレーム
         $cardBase = new Imagick(realpath("./") . '/app/img/frame/card_base_' . $cardFrameIndex . '.png');
+        $cardBase2 = new Imagick(realpath("./") . '/app/img/frame/card_base_front.png');
+        $cardBase->compositeImage($cardBase2, $cardBase2->getImageCompose(), 0, 0);
+
         $draw = new ImagickDraw();
         //文字
         //目的
@@ -197,7 +200,7 @@ class MainController extends Controller
             if ($checkData != null) {
                 $codeStr = "";
             }
-        }
+        } 
 
         //データを保存
         $newData = new Report();
