@@ -14,6 +14,7 @@ use App\Models\Report;
 
 use Imagick;
 use ImagickDraw;
+use ImagickPixel;
 
 class MainController extends Controller
 {    
@@ -53,7 +54,15 @@ class MainController extends Controller
 
         //カードを作成
         //フレーム
-        $cardBase = new Imagick(realpath("./") . '/app/img/frame/card_base_' . $cardFrameIndex . '.png');
+        if (strpos($cardFrameIndex, "#") === false) {
+            //画像指定
+            $cardBase = new Imagick(realpath("./") . '/app/img/frame/card_base_' . $cardFrameIndex . '.png');
+        } else {
+            //色指定
+            $cardBase = new Imagick();
+            $cardBase->newImage(600, 314, new ImagickPixel($cardFrameIndex));
+        }
+
         $cardBase2 = new Imagick(realpath("./") . '/app/img/frame/card_base_front.png');
         $cardBase->compositeImage($cardBase2, $cardBase2->getImageCompose(), 0, 0);
 
@@ -139,22 +148,21 @@ class MainController extends Controller
         $reportData->save();
 
         //アクセス前に作成された画像のデータを削除
-        $otherReportList = Report::where("code", '<>', $code)->where("is_access", "1")->get();
-        foreach ($otherReportList as $data) {
-            //ファイルが存在する場合は削除
-            $oCode = $data->code;
-            if (file_exists(realpath("./") . '/storage/card/card_' . $oCode . '.jpg')) {
-                //削除
-                $delFlg = unlink(realpath("./") . '/storage/card/card_' . $oCode . '.jpg');
-                if ($delFlg) {
-                    $data->is_access = 2;
-                    $data->save();
-                }
-            }
-        }
+        // $otherReportList = Report::where("code", '<>', $code)->where("is_access", "1")->get();
+        // foreach ($otherReportList as $data) {
+        //     //ファイルが存在する場合は削除
+        //     $oCode = $data->code;
+        //     if (file_exists(realpath("./") . '/storage/card/card_' . $oCode . '.jpg')) {
+        //         //削除
+        //         $delFlg = unlink(realpath("./") . '/storage/card/card_' . $oCode . '.jpg');
+        //         if ($delFlg) {
+        //             $data->is_access = 2;
+        //             $data->save();
+        //         }
+        //     }
+        // }
 
         return view('spa.app')->with(['title' => "新規作成" . $code, 'card' => 'card_' . $code]);
-        // return view('spa.app')->with(['title' => "新規作成" . $code, 'card' => 'card_' . $code]);
     }
 
     //
