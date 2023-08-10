@@ -13,16 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('reports', function (Blueprint $table) {
+        Schema::create('responses', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
+            $table->integer('soudan_id');
+            $table->integer('no');
             $table->string('user_id', 30);
             $table->string('name', 20);
-            $table->string('kbn', 1)->default("0");
             $table->integer('degree')->default(0);
             $table->string('body', 1000)->default("");
-            $table->string('title', 100)->default("");
-            $table->string('message', 200)->default("");
-            $table->string('time')->default("");
             $table->string('secret')->default("");
             $table->integer('is_delete', 1)->default(0);
             $table->string('info');
@@ -37,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('reports');
+        Schema::dropIfExists('responses');
     }
 };

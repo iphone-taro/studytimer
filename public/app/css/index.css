@@ -1,3 +1,4 @@
+.sp_line_sss {height : 5px;}
 .sp_line_ss {height : 10px;}
 .sp_line_s  {height : 16px;}
 .sp_line_m  {height : 26px;}
@@ -11,20 +12,17 @@
 .font_ss    {font-size: 8px; margin:0px}
 .font_b     {font-weight:bold;}
 
-.mainArea {
-    width:100%;
-}
-@media screen and (min-width : 700px) {
-    .mainArea {
-        width: 700px;
-        margin:auto;
-    }
+.modalWidth-A{
+    width:80%;
 }
 
-.inputBase {
-    border: 1px solid #808080;
-    border-radius: 6px;
-    color: #808080 !important;
+.modalWidth-B {
+    width: 95%;
+}
+@media screen and (min-width : 576px) {
+    .modalWidth-B {
+        width: 500px;
+    }
 }
 
 .absoluteCenterX {

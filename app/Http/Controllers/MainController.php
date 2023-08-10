@@ -11,6 +11,15 @@ use Illuminate\Support\Facades\DB;
 use App\Consts\Consts;
 use Carbon\Carbon;
 use App\Models\Report;
+use App\Models\Examinee;
+use App\Models\Soudan;
+use App\Models\Nandemo;
+use App\Models\Guchi;
+use App\Models\Stamp;
+use App\Models\Response;
+use App\Models\Sequence;
+use App\Models\Violation;
+use App\Models\Invisible;
 
 use Imagick;
 use ImagickDraw;
@@ -18,6 +27,15 @@ use ImagickPixel;
 
 class MainController extends Controller
 {    
+    public function test() {
+        $text = "あいうえお\n\n\n\n\n\n\n\n\nあいうえお\n\n\nあいうえお\n\n\n\n\nあいうえお\n\n\n\n\n\nあいうえお\n";
+
+        $pattern = "/(\R{3,})/u";
+
+        $aaa = preg_replace("/(\R{3,})/u", "\n\n", $text);
+        dd($aaa);
+    }
+
     //
     //広告情報取得
     //
@@ -33,201 +51,681 @@ class MainController extends Controller
     //
     public function access ($code) {
         //DBから情報を取得
-        $reportData = Report::where("code", $code)->first();
-
-        if ($reportData == null) {
-            //存在しないコードの場合
-            return view('spa.app')->with(['title' => Consts::BASE_TITLE, 'card' => 'card_common']);
-        }
-
-        Report::where("code", $code)->increment('view_count');
 
         //すでに画像がある場合
-        // if (file_exists(realpath("./") . '/storage/card/card_' . $code . '.jpg')) {
-        //     return view('spa.app')->with(['title' => "使いまわし" . $code, 'card' => 'card_' . $code]);
-        // }
-
-        $cardFrameIndex = $reportData->frame_index;
-        $cardKbn = $reportData->kbn; //0:開始 1:終了
-        $title = $reportData->title;
-        $studyTime = (int)$reportData->study_time;
-
-        //カードを作成
-        //フレーム
-        if (strpos($cardFrameIndex, "#") === false) {
-            //画像指定
-            $cardBase = new Imagick(realpath("./") . '/app/img/frame/card_base_' . $cardFrameIndex . '.png');
-        } else {
-            //色指定
-            $cardBase = new Imagick();
-            $cardBase->newImage(600, 314, new ImagickPixel($cardFrameIndex));
+        if (file_exists(realpath("./") . '/storage/card/' . $code . '.jpg')) {
+            return view('spa.app')->with(['card' => $code . "jpg"]);
         }
 
-        $cardBase2 = new Imagick(realpath("./") . '/app/img/frame/card_base_front.png');
-        $cardBase->compositeImage($cardBase2, $cardBase2->getImageCompose(), 0, 0);
-
-        $draw = new ImagickDraw();
-        //文字
-        //目的
-        $draw->setFont(realpath("./") . "/storage/ZenMaruGothic-Regular.ttf");
-        $draw->setFillColor("rgb(58, 58, 58)");
-        $draw->setTextInterlineSpacing(2);
-        $draw->setGravity(Imagick::GRAVITY_CENTER); 
-
-        $titleWidth = 600 * 0.75;
-        $array = array();
-        $fontVal = 40;
-        $flg = true;
-        while ($flg) {
-            $draw->setFontSize($fontVal);
-            $metrics = $cardBase->queryFontMetrics($draw, $title);
-            $array[] = $fontVal . " " . $metrics['textWidth'];
-            
-            if ($metrics["textWidth"] > $titleWidth) {
-                $fontVal--;
-                if ($fontVal == 24) {
-                    $flg = false;
-                }
-            } else {
-                $flg = false;
-            }
+        //未使用にある場合
+        if (file_exists(realpath("./") . '/storage/card/unused/' . $code . '.jpg')) {
+            //ファイルを移動
+            if (rename(realpath("./") . '/storage/card/unused/' . $code . '.jpg', realpath("./") . '/storage/card/' . $code . '.jpg'))
+            return view('spa.app')->with(['card' => $code . ".jpg"]);
         }
 
-        if ($fontVal == 24) {
-            //折り返しが必要
-            $draw->setFontSize(25);
+        //ない場合
+        return view('spa.app')->with(['card' => "base.jpg"]);
+    }
 
-            //1文字ずつ追加して、サイズを超えたら改行を入れる？
-            $newStr = "";
-            for ($i=0; $i < mb_strlen($title); $i++) { 
-                $str = $newStr . mb_substr($title, $i, 1);
-                $metrics = $cardBase->queryFontMetrics($draw, $str);
+    //
+    //通報リスト取得
+    //
+    public function getViolationList (Request $request) {
 
-                if ($metrics["textWidth"] > $titleWidth) {
-                    //超えたら前に改行を入れる
-                    $str = $newStr . "\n" . mb_substr($title, $i, 1);
-                }
-                $newStr = $str;
-            }
-            $title = $newStr;
+        //勉強報告
+        $reportList = \DB::table('violations as vi')
+        ->select('vi.id', 'vi.message', 'vi.created_at', 'vi.user_id as report_id', 
+        'ta.user_id', 'ta.name', 'ta.kbn', 'ta.degree', 'ta.title', 'ta.message', 'ta.time', 'ta.is_delete', 'ta.created_at')
+        ->leftJoin('reports as ta', 'vi.post_id', '=', 'ta.id')
+        ->where('vi.post_kbn', 'REPORT')
+        ->where('vi.status', 0)->get();
+
+        //受験生
+        $examineeList = \DB::table('violations as vi')
+        ->select('vi.id', 'vi.message', 'vi.created_at', 'vi.user_id as report_id',
+        'ta.user_id', 'ta.name', 'ta.ken', 'ta.choice', 'ta.degree', 'ta.body', 'ta.is_delete', 'ta.created_at')
+        ->leftJoin('examinees as ta', 'vi.post_id', '=', 'ta.id')
+        ->where('vi.post_kbn', 'EXAMINEE')
+        ->where('vi.status', 0)->get();
+
+        //愚痴
+        $guchiList = \DB::table('violations as vi')
+        ->select('vi.id', 'vi.message', 'vi.created_at', 'vi.user_id as report_id',
+        'ta.user_id', 'ta.name', 'ta.degree', 'ta.body', 'ta.is_delete', 'ta.created_at')
+        ->leftJoin('guchis as ta', 'vi.post_id', '=', 'ta.id')
+        ->where('vi.post_kbn', 'GUCHI')
+        ->where('vi.status', 0)->get();
+
+        //相談
+        $soudanList = \DB::table('violations as vi')
+        ->select('vi.id', 'vi.message', 'vi.created_at', 'vi.user_id as report_id',
+        'ta.user_id', 'ta.name', 'ta.degree', 'ta.body', 'ta.is_delete', 'ta.created_at')
+        ->leftJoin('soudans as ta', 'vi.post_id', '=', 'ta.id')
+        ->where('vi.post_kbn', 'SOUDAN')
+        ->where('vi.status', 0)->get();
+
+        //相談返信
+        $responseList = \DB::table('violations as vi')
+        ->select('vi.id', 'vi.message', 'vi.created_at', 'vi.user_id as report_id',
+        'ta.user_id', 'ta.name', 'ta.degree', 'ta.body', 'ta.is_delete', 'ta.created_at')
+        ->leftJoin('responses as ta', 'vi.post_id', '=', 'ta.id')
+        ->where('vi.post_kbn', 'RESPONSE')
+        ->where('vi.status', 0)->get();
+
+        //なんでも
+        $nandemoList = \DB::table('violations as vi')
+        ->select('vi.id', 'vi.message', 'vi.created_at', 'vi.user_id as report_id',
+        'ta.user_id', 'ta.name', 'ta.degree', 'ta.body', 'ta.is_delete', 'ta.created_at')
+        ->leftJoin('nandemos as ta', 'vi.post_id', '=', 'ta.id')
+        ->where('vi.post_kbn', 'NANDEMO')
+        ->where('vi.status', 0)->get();
+
+        return response()->json(['status' => Consts::API_SUCCESS, 
+            'reportList' => $reportList,
+            'examineeList' => $examineeList,
+            'guchiList' => $guchiList,
+            'soudanList' => $soudanList,
+            'responseList' => $responseList,
+            'nandemoList' => $nandemoList,
+        ]);
+    }
+
+    public function updateThrowMgr (Request $request) {
+        $id = $request->id;
+
+        $update = \DB::table('violations')->where('id', $id)->update(['status' => 2]);
+
+        return response()->json(['status' => Consts::API_SUCCESS]);
+    }
+
+    public function updateBlackMgr (Request $request) {
+        $id = $request->id;
+        $userId = $request->userId;
+
+        $update = \DB::table('violations')->where('id', $id)->update(['status' => 1]);
+
+        $data = \DB::table('invisibles')->where('user_id', $userId)->first();
+
+        if ($data == null) {
+            $newData = new Invisible();
+            $newData->user_id = $userId;
+            $newData->save();    
         }
-        $cardBase->annotateImage($draw, 0, -60, 0, $title);
 
-        $draw->setFontSize(20);
-        if ($cardKbn == 0) {
-            //開始
-            $cardBase->annotateImage($draw, 0, 18, 0, "の勉強を開始しました");
-        } else if ($cardKbn == 1) {
-            //終了
-            $cardBase->annotateImage($draw, 0, 18, 0, "の勉強を終了しました");
-
-            //時間の整形
-            $timeStr = "";
-            $hours = floor($studyTime / 3600); // 時間
-            $minutes = floor(($studyTime % 3600) / 60); // 分
-            $seconds = $studyTime % 60; // 秒
-
-            if ($hours != 0) {
-                $timeStr = $timeStr . $hours . "時間";
-            }
-            if ($minutes != 0) {
-                $timeStr = $timeStr . $minutes . "分";
-            }
-            if ($seconds != 0) {
-                $timeStr = $timeStr . $seconds . "秒";
-            }
-
-            $draw->setFontSize(20);
-            $draw->setGravity(Imagick::GRAVITY_SOUTHEAST );
-            $cardBase->annotateImage($draw, 30, 55, 0, $timeStr);
-        }
-
-        $cardBase->writeImage(realpath("./") . '/storage/card/card_' . $code . '.jpg');
-
-        $reportData->is_access = 1;
-        $reportData->save();
-
-        //アクセス前に作成された画像のデータを削除
-        // $otherReportList = Report::where("code", '<>', $code)->where("is_access", "1")->get();
-        // foreach ($otherReportList as $data) {
-        //     //ファイルが存在する場合は削除
-        //     $oCode = $data->code;
-        //     if (file_exists(realpath("./") . '/storage/card/card_' . $oCode . '.jpg')) {
-        //         //削除
-        //         $delFlg = unlink(realpath("./") . '/storage/card/card_' . $oCode . '.jpg');
-        //         if ($delFlg) {
-        //             $data->is_access = 2;
-        //             $data->save();
-        //         }
-        //     }
-        // }
-
-        return view('spa.app')->with(['title' => "新規作成" . $code, 'card' => 'card_' . $code]);
+        return response()->json(['status' => Consts::API_SUCCESS]);
     }
 
     //
     //初期処理
     //
     public function initAction (Request $request) {
-        $reportList = Report::where('study_time', '>', 6000)->where('kbn', '1')
-        ->select('title', 'study_time as time', 'created_at as date')->get();
+        // $reportList = Report::where('study_time', '>', 6000)->where('kbn', '1')
+        // ->select('title', 'study_time as time', 'created_at as date')->get();
 
-        return response()->json(['reportList' => $reportList]);
+        // return response()->json(['reportList' => $reportList]);
     }
 
     //
-    //報告追加
     //
-    public function reportStudy (Request $request) {
+    //
+    public function shareAction (Request $request) {
+        $img = $request->baseFile;
+
+        if ($img == null) {
+            //失敗
+            return response()->json(['status' => Consts::API_FAILED_NODATA, 'errMsg' => ""]);
+        }
+
+        $img = str_replace('data:image/jpeg;base64,', '', $img);
+        $img = str_replace(' ', '+', $img);
+        $fileData = base64_decode($img);
+        
+        //画像IDを決定
+        $imgId = "";
+        $randomStr = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        while ($imgId == "") {
+            for ($i = 0; $i < 20; $i++) {
+                $ch = substr($randomStr, mt_rand(0, strlen($randomStr)) - 1, 1);
+                $imgId = $imgId . $ch;
+            }
+            //重複チェック
+            if (file_exists("../storage/app/public/card/unused/" . $imgId . ".jpg")) {
+                $imgId = "";
+            }
+            if (file_exists("../storage/app/public/card/" . $imgId . ".jpg")) {
+                $imgId = "";
+            }
+        }
+
+        if (file_put_contents("../storage/app/public/card/unused/" . $imgId . ".jpg", $fileData)) {
+            //成功
+            return response()->json(['status' => Consts::API_SUCCESS, 'code' => $imgId]);
+        } else {
+            //失敗
+            return response()->json(['status' => Consts::API_FAILED_NODATA, 'errMsg' => ""]);
+        }
+    }
+
+
+    //
+    //
+    //
+    public function insertPost (Request $request) {
+        
         //バリデート
         try {
             $validated = $request->validate([
-                'titleName' => 'required|string',
-                'kbn' => 'required|string',
-                'frameIndex' => 'required|string',
-                'studyTime' => 'string',
+                'userId' => 'string',
+                'postKbn' => 'required|string',
+                'nickName' => 'required|string',
+                'secret' => 'string',
+                'body' => 'string',
+
+                'title' => 'string',
+                'message' => 'string',
+                'kbn' => 'string',
+                'time' => 'string',
+
+                'ken' => 'numeric',
+                'choice' => 'string',
             ]);
         } catch (ValidationException $e) {
             return response()->json(['status' => Consts::API_FAILED_PARAM, 'errMsg' => $e->getMessage()]);
         }
 
-        $titleName = $request->titleName;
-        $kbn = $request->kbn;
-        $frameIndex = $request->frameIndex;
+        $postKbn = $request->postKbn;
+        $nickName = trim($request->nickName);
+        $userId = $request->userId;
+        $secret = $request->secret;
+        $degree = $request->degree;
 
-        //IDを生成
-        $randomStr = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        $codeStr = "";
-        while($codeStr == "") {
-            for ($i = 0; $i < 15; $i++) {
-                $ch = substr($randomStr, mt_rand(0, strlen($randomStr)) - 1, 1);
-                $codeStr = $codeStr . $ch;
-            }
-            //重複チェック
-            $checkData = DB::table('reports')->where('code', $codeStr)->first();
-            if ($checkData != null) {
-                $codeStr = "";
-            }
-        } 
-
-        //データを保存
-        $newData = new Report();
-        $newData->code = $codeStr;
-        $newData->title = $titleName;
-        $newData->kbn = $kbn;
-        $newData->frame_index = $frameIndex;
-
-        if ($kbn == "1") {
-            //勉強時間を設定
-            $newData->study_time = $request->studyTime;
+        //入力チェック
+        if ($nickName == "" || mb_strlen($nickName) > 20) {
+            return response()->json(['status' => Consts::API_FAILED_PARAM, 'errMsg' => "ニックネームエラー"]);
         }
 
+        if (mb_strlen($secret) > 5) {
+            return response()->json(['status' => Consts::API_FAILED_PARAM, 'errMsg' => "削除番号エラー"]);
+        }
+        
+        $userId = $this->chkUserId($userId);
+        
+        if ($postKbn == "REPORT") {
+            $title = trim($request->title);
+            if ($title == "" || mb_strlen($title) > 50) {
+                return response()->json(['status' => Consts::API_FAILED_PARAM, 'errMsg' => "勉強内容エラー"]);
+            }
+            
+            $message = trim($request->message);
+            $message = preg_replace("/\r\n/", "\n", $message);
+            $message = preg_replace("/(\R{3,})/u", "\n\n", $message);
+            
+            if (mb_strlen($message) > 300) {
+                return response()->json(['status' => Consts::API_FAILED_PARAM, 'errMsg' => "勉強内容エラー"]);
+            }
+
+            $newData = new Report();
+            
+            $newData->kbn = $request->kbn;
+            $newData->time = $request->time;
+            $newData->title = $title;
+            $newData->message = $message;
+        } else if ($postKbn == "EXAMINEE") {
+            $choice = trim($request->choice);
+            if (mb_strlen($choice) > 30) {
+                return response()->json(['status' => Consts::API_FAILED_PARAM, 'errMsg' => "志望校エラー"]);
+            }
+
+            $newData = new Examinee();
+            $newData->ken = $request->ken;
+            $newData->choice = $choice;
+        } else if ($postKbn == "GUCHI") {
+            $newData = new Guchi();
+        } else if ($postKbn == "SOUDAN") {
+            $newData = new Soudan();
+        } else if ($postKbn == "NANDEMO") {
+            $newData = new Nandemo();
+        } else if ($postKbn == "RESPONSE") {
+            $newData = new Response();
+
+            $soudanId = $request->soudanId;
+            
+            //投稿番号を取得
+            $seqData = \DB::table('sequences')
+            ->where('soudan_id', $soudanId)->first();
+
+            $newData->soudan_id = $soudanId;
+            $newData->no = $seqData->no;
+        } else {
+            //エラー
+            $newData = null;
+        }
+
+        if ($postKbn != "REPORT") {
+            $body = trim($request->body);
+            $body = preg_replace("/\r\n/", "\n", $body);
+            $body = preg_replace("/(\R{3,})/u", "\n\n", $body);
+            
+            $bodyMaxLength = 400;
+            if ($postKbn == "SOUDAN") {
+                $bodyMaxLength = 2000;
+            } else if ($postKbn == "RESPONSE") {
+                $bodyMaxLength = 1000;
+            }
+            if (mb_strlen($body) > $bodyMaxLength) {
+                return response()->json(['status' => Consts::API_FAILED_PARAM, 'errMsg' => "本文エラー"]);
+            }
+            $newData->body = $body;
+        }
+
+        $newData->user_id = $userId;
+        $newData->name = $nickName;
+        $newData->secret = $secret;
+        $newData->degree = $degree;
+        $newData->info = $_SERVER['REMOTE_ADDR'] . "/" . $_SERVER['HTTP_USER_AGENT'];
+        
         $result = $newData->save();
 
         if ($result) {
-            return response()->json(['status' => Consts::API_SUCCESS, 'code' => $codeStr]);
+            // $postCount = $this->retPostList($request, $userId, false);
+            // $postList = $this->retPostList($request, $userId, true);
+
+            if ($postKbn == "SOUDAN") {
+                $seqData = new Sequence();
+                $seqData->soudan_id = $newData->id;
+                $seqData->no = 1;
+                $seqData->save();
+            } else if ($postKbn == "RESPONSE") {
+                $abc = \DB::table('sequences')
+                ->where('soudan_id', $soudanId)
+                ->increment('no');
+            }
+
+            return response()->json(['status' => Consts::API_SUCCESS, 'userId' => $userId]);
         } else {
             return response()->json(['status' => Consts::API_FAILED_EXEPTION]);
         }
+    }
+
+    //
+    //削除
+    //
+    public function deletePost (Request $request) {
+        //バリデート
+        try {
+            $validated = $request->validate([
+                'postKbn' => 'required|string',
+                'postId' => 'required|string',
+                'deleteNo' => 'required|string',
+                'userId' => 'required|string',
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json(['status' => Consts::API_FAILED_PARAM, 'errMsg' => $e->getMessage()]);
+        }
+
+        $postKbn = $request->postKbn;
+        $postId = $request->postId;
+        $deleteNo = $request->deleteNo;
+        $userId = $request->userId;
+
+        $tableName = Consts::retTableName($postKbn);
+        
+        $postData = \DB::table($tableName)->where('id', $postId)->where('user_id', $userId)->where('is_delete', 0)->first();
+
+        if ($postData == null) {
+            //データなし
+            return response()->json(['status' => Consts::API_FAILED_NODATA, 'errMsg' =>""]);
+        }
+        
+        if ($postData->secret != $deleteNo) {
+            //データなし
+            return response()->json(['status' => Consts::API_FAILED_MISMATCH, 'errMsg' =>""]);
+        }
+
+        //削除
+        $delete = \DB::table($tableName)->where('id', $postId)->where('user_id', $userId)->update(['is_delete' => 1]);
+
+        return response()->json(['status' => Consts::API_SUCCESS]);
+    }
+
+    //
+    //通報
+    //
+    public function reportPost (Request $request) {
+        //バリデート
+        try {
+            $validated = $request->validate([
+                'postKbn' => 'required|string',
+                'postId' => 'required|string',
+                'message' => 'required|string',
+                'userId' => 'required|string',
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json(['status' => Consts::API_FAILED_PARAM, 'errMsg' => $e->getMessage()]);
+        }
+
+        $postKbn = $request->postKbn;
+        $postId = $request->postId;
+        $message = $request->message;
+        $userId = $request->userId;
+
+        $tableName = Consts::retTableName($postKbn);
+
+        $postData = \DB::table($tableName)->where('id', $postId)->first();
+
+        if ($postData == null) {
+            //データなし
+            return response()->json(['status' => Consts::API_FAILED_NODATA, 'errMsg' =>""]);
+        }
+        $violationData = new Violation();
+        $violationData->post_kbn = $postKbn;
+        $violationData->post_id = $postId;
+        $violationData->message = $message;
+        $violationData->user_id = $userId;
+        $violationData->info = $_SERVER['REMOTE_ADDR'] . "/" . $_SERVER['HTTP_USER_AGENT'];
+        $violationData->save();
+
+        return response()->json(['status' => Consts::API_SUCCESS]);
+    }
+
+    public function retPostList(Request $request, $userId, $isList) {
+        $postKbn = $request->postKbn;
+        $page = $request->page;
+        $keyword = $request->keyword;
+        $degree = $request->degree;
+        $degreeArray = json_decode($degree);
+
+        $tableName = Consts::retTableName($postKbn);
+
+        $stampCountSub = \DB::table('stamps')
+        ->select('post_id')
+        ->selectRaw('count(*) as stamp_count')
+        ->groupBy('post_id', 'kbn')
+        ->where('kbn', $postKbn);
+
+        $stampMySub = \DB::table('stamps')
+        ->select('post_id', 'user_id as my_flg')
+        ->where('kbn', $postKbn)
+        ->where('user_id', $userId);
+
+        $invisibleSub = \DB::table('invisibles')
+        ->where('user_id', '<>', $userId);
+
+        $query = \DB::table($tableName)
+        ->leftJoinSub($invisibleSub, 'invisibles', function ($join) use ($tableName) {
+            $join->on('invisibles.user_id', '=', $tableName . '.user_id');
+        })
+        ->orderBy($tableName . '.created_at', 'desc')
+        ->whereIn('degree', $degreeArray)
+        ->where('is_delete', 0)
+        ->whereNull('invisibles.user_id');
+
+        //セレクト句
+        if ($postKbn == "REPORT") {
+            $query->select($tableName . ".id", $tableName . ".user_id", $tableName . ".name", $tableName . ".degree", $tableName . ".secret", $tableName . ".created_at", "stamp_sub1.stamp_count", "stamp_sub2.my_flg", $tableName . ".kbn", $tableName . ".title", $tableName . ".message", $tableName . ".time");
+        } else if ($postKbn == "EXAMINEE") {
+            $query->select($tableName . ".id", $tableName . ".user_id", $tableName . ".name", $tableName . ".degree", $tableName . ".secret", $tableName . ".created_at", "stamp_sub1.stamp_count", "stamp_sub2.my_flg", $tableName . ".body", $tableName . ".ken", $tableName . ".choice");
+        } else if ($postKbn == "GUCHI") {
+            $query->select($tableName . ".id", $tableName . ".user_id", $tableName . ".name", $tableName . ".degree", $tableName . ".secret", $tableName . ".created_at", "stamp_sub1.stamp_count", "stamp_sub2.my_flg", $tableName . ".body");
+        } else if ($postKbn == "SOUDAN") {
+            $query->select($tableName . ".id", $tableName . ".user_id", $tableName . ".name", $tableName . ".degree", $tableName . ".secret", $tableName . ".created_at", $tableName . ".body");
+        } else if ($postKbn == "RESPONSE") {
+            $query->select($tableName . ".id", $tableName . ".user_id", $tableName . ".name", $tableName . ".degree", $tableName . ".secret", $tableName . ".created_at", "stamp_sub1.stamp_count", "stamp_sub2.my_flg", $tableName . ".body", $tableName . ".soudan_id");
+        } else if ($postKbn == "NANDEMO") {
+            $query->select($tableName . ".id", $tableName . ".user_id", $tableName . ".name", $tableName . ".degree", $tableName . ".secret", $tableName . ".created_at", "stamp_sub1.stamp_count", "stamp_sub2.my_flg", $tableName . ".body");
+        }
+
+        if ($postKbn != "SOUDAN") {
+            $query->leftJoinSub($stampCountSub, 'stamp_sub1', function ($join) use ($tableName) {
+                $join->on($tableName . '.id', '=', 'stamp_sub1.post_id');
+            })
+            ->leftJoinSub($stampMySub, 'stamp_sub2', function ($join) use ($tableName) {
+                $join->on($tableName . '.id', '=', 'stamp_sub2.post_id');
+            });
+        }
+
+        if ($postKbn == "RESPONSE") {
+            $soudanId = $request->soudanId;
+            $query->where($tableName . '.soudan_id', $soudanId);
+        }
+
+        if ($postKbn == "EXAMINEE") {
+            //受験生
+            $kenStr = $request->kens;
+            $kenArray = explode(",", $kenStr);
+            $query->whereIn('ken', $kenArray);
+
+            $wordArray = explode(" ", $keyword);
+            for ($i = 0; $i < count($wordArray); $i++) {
+                if ($wordArray[$i] != "") {
+                    $word = $wordArray[$i];
+                    
+                    //通常の検索
+                    $query->where(function($query) use ($word) {
+                        $query->where("examinees.name", 'like', "%" . $word . "%")
+                        ->orWhere('examinees.body', "like", "%" . $word . "%");
+                    });
+                }
+            }
+        } else if ($postKbn == "SOUDAN") {
+            //相談　レス数を取得
+            $queryResSub = \DB::table('responses')
+            ->select('soudan_id')
+            ->selectRaw('count(*) as res_count')
+            ->groupBy('soudan_id');
+
+            $query->leftJoinSub($queryResSub, 'res', function ($join) use ($tableName) {
+                $join->on($tableName . '.id', '=', 'res.soudan_id');
+            });
+
+            if ($request->keyword != null) {
+                //相談返信用の相談取得
+                $query->where($tableName . '.id', $request->keyword);
+            }
+        }
+
+        // dd(preg_replace_array('/\?/', $query->getBindings(), $query->toSql()));
+        if ($isList) {
+            //リストを返却
+            if ($page == -1) {
+                //トップ用の新着
+                $postList = $query->take(5)->get();
+            } else if ($page == -2) {
+                //ポップアップ用のデータ（1件のみ）
+                $query->where($tableName . '.id', $keyword);
+                $postList = $query->get();
+            } else {
+                //各種ページ
+                $postList = $query->skip(($page - 1) * 20)->take(20)->get();
+
+                //削除コードの隠蔽
+                foreach ($postList as $data) {
+                    if ($data->secret != "") {
+                        $data->secret = "del";
+                    }
+                }
+            }
+
+            //本文と一言の処理
+            for ($i=0; $i < count($postList); $i++) { 
+                if (property_exists($postList[$i], "body")) {
+                    //変換
+                    $postList[$i]->body = str_replace("<", "&lt;", $postList[$i]->body);
+                    // $profile = preg_replace("/\r\n/", "\n", $profile);
+                }
+                
+                if (property_exists($postList[$i], "message")) {
+                    //変換
+                    $postList[$i]->message = str_replace("<", "&lt;", $postList[$i]->message);
+
+                }
+            }
+            
+            //順序を入れ替える 相談と新着以外
+            if ($postKbn != 'SOUDAN' && $page != -1) {
+                $postList = $postList->reverse()->values();
+            }
+            // dd(preg_replace_array('/\?/', $query->getBindings(), $query->toSql()));
+
+            //フィルタリング
+            for ($i=0; $i < count($postList); $i++) { 
+                $data = $postList[$i];
+
+                //名前
+                $data->name = Consts::retFiltering($data->name);
+
+                if ($postKbn == "REPORT") {
+                    $data->title = Consts::retFiltering($data->title);
+                    $data->message = Consts::retFiltering($data->message);
+                } else {
+                    $data->body = Consts::retFiltering($data->body);
+                }
+
+                if ($postKbn == "EXAMINEE") {
+                    $data->choice = Consts::retFiltering($data->choice);
+                }
+            }
+
+            return $postList;
+        } else {
+            //総件数を返却
+            $postCount = $query->count();
+            return $postCount;
+        }
+    }
+
+    //
+    //一覧取得
+    //
+    public function getPostList (Request $request) {
+        $userId = $request->userId;
+        
+        $userId = $this->chkUserId($userId);
+
+        $array = array();
+        //相談返信の場合存在チェック
+        if ($request->postKbn == "RESPONSE") {
+
+            $requestS = new Request();
+            $requestS->postKbn = "SOUDAN";
+            $requestS->keyword = $request->soudanId;
+            $requestS->page = 0;
+            $requestS->degree = $request->degree;
+
+            $soudanList = $this->retPostList($requestS, $userId, true);
+
+            if (count($soudanList) != 1) {
+                return response()->json(['status' => Consts::API_FAILED_NODATA, 'errMsg' => '']);
+            }
+            $array = $array + array('soudanData' => $soudanList[0]);
+        }
+
+        $postList = $this->retPostList($request, $userId, true);
+        $postCount = $this->retPostList($request, $userId, false);
+
+        $array = $array + array('status' => Consts::API_SUCCESS, 'postList' => $postList, 'postCount' => $postCount, 'userId' => $userId);
+        return response()->json($array);
+
+    }
+
+    //
+    //一覧取得
+    //
+    public function getListRowData (Request $request) {
+        $userId = $request->userId;
+        
+        $userId = $this->chkUserId($userId);
+        $postDataList = $this->retPostList($request, $userId, true);
+
+        $postData = null;
+        if (count($postDataList) == 1) {
+            $postData = $postDataList[0];
+        }
+
+        return response()->json(['status' => Consts::API_SUCCESS, 'postData' => $postData]);
+    }
+
+    //
+    //トップ画面用の全新着を取得
+    //
+    public function getLatestPostList (Request $request) {
+        $userId = $request->userId;
+       
+        $userId = $this->chkUserId($userId);
+
+        $request->postKbn = "REPORT";
+        $reportList = $this->retPostList($request, $userId, true);
+        $request->postKbn = "EXAMINEE";
+        $examineeList = $this->retPostList($request, $userId, true);
+        $request->postKbn = "GUCHI";
+        $guchiList = $this->retPostList($request, $userId, true);
+        $request->postKbn = "SOUDAN";
+        $soudanList = $this->retPostList($request, $userId, true);
+        $request->postKbn = "NANDEMO";
+        $nandemoList = $this->retPostList($request, $userId, true);
+
+        return response()->json(['status' => Consts::API_SUCCESS, 
+        'reportList' => $reportList,
+        'examineeList' => $examineeList,
+        'guchiList' => $guchiList,
+        'soudanList' => $soudanList,
+        'nandemoList' => $nandemoList,
+        'userId' => $userId]);
+    }
+
+    //
+    // ユーザーIDチェック
+    //
+    public function chkUserId ($userId) {
+        if ($userId == "") {
+            //IDを生成
+            $randomStr = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            $userId = "";
+            while($userId == "") {
+                for ($i = 0; $i < 30; $i++) {
+                    $ch = substr($randomStr, mt_rand(0, strlen($randomStr)) - 1, 1);
+                    $userId = $userId . $ch;
+                }
+                // //重複チェック
+                // $checkData = DB::table('reports')->where('user_id', $userId)->first();
+                // if ($checkData != null) {
+                //     $userId = "";
+                // }
+            }
+            return $userId;
+        }
+
+        return $userId;
+        
+    }
+
+    //
+    //スタンプ
+    //
+    public function addStamp (Request $request) {
+        $postId = $request->postId;
+        $postKbn = $request->postKbn;
+        $userId = $request->userId;
+        $stampId = $request->stampId;
+
+        $userId = $this->chkUserId($userId);
+        
+        $tableName = Consts::retTableName($postKbn);
+
+        $postData = \DB::table($tableName)->where('id', $postId)->first();
+
+        if ($postData == null) {
+            return response()->json(['status' => Consts::API_FAILED_NODATA, 'errMsg' => '']);
+        }
+
+        $stampData = new Stamp();
+        $stampData->post_id = $postId;
+        $stampData->kbn = $postKbn;
+        $stampData->user_id = $userId;
+        $stampData->stamp_id = $stampId;
+        $stampData->save();
+
+        return response()->json(['status' => Consts::API_SUCCESS, 'userId' => $userId]);
     }
 }
