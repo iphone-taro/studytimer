@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('degree')->default(0);
             $table->string('body', 1000)->default("");
             $table->string('secret')->default("");
-            $table->integer('is_delete', 1)->default(0);
+            $table->integer('is_delete')->default(0);
             $table->string('info');
             $table->timestamps();
         });

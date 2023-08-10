@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('message', 200)->default("");
             $table->string('time')->default("");
             $table->string('secret')->default("");
-            $table->integer('is_delete', 1)->default(0);
+            $table->integer('is_delete')->default(0);
             $table->string('info');
             $table->timestamps();
         });
