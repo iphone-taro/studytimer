@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/app/precache-manifest.9434c0aec29008246a7650870a1a0c85.js"
+  "/app/precache-manifest.030060c60878d4a1020f26f403ef058e.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "studytimer"});
