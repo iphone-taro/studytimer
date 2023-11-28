@@ -251,6 +251,18 @@ class MainController extends Controller
         
         $userId = $this->chkUserId($userId);
         
+        //運営設定
+        if ($nickName == "運営愛ふぉん太郎") {
+            $nickName = "まなぴよ運営";
+            $userId = "manapiyo";
+            $degree = 99;
+        }
+        //ランダム設定
+        if (strpos($nickName, "ランダム愛ふぉん太郎") == 0) {
+            $nickName = str_replace('ランダム愛ふぉん太郎', '', $nickName);
+            $userId = $this->chkUserId("");
+        }
+
         if ($postKbn == "REPORT") {
             $title = trim($request->title);
             if ($title == "" || mb_strlen($title) > 50) {
@@ -459,8 +471,11 @@ class MainController extends Controller
         ->orderBy($tableName . '.created_at', 'desc')
         ->whereIn('degree', $degreeArray)
         ->where('is_delete', 0)
-        ->whereNull('invisibles.user_id');
-
+        ->where(function($query) use ($userId) {
+            $query->whereNull('invisibles.user_id')
+            ->orWhere('invisibles.user_id', "=", $userId);
+        });
+        
         //セレクト句
         if ($postKbn == "REPORT") {
             $query->select($tableName . ".id", $tableName . ".user_id", $tableName . ".name", $tableName . ".degree", $tableName . ".secret", $tableName . ".created_at", "stamp_sub1.stamp_count", "stamp_sub2.my_flg", $tableName . ".kbn", $tableName . ".title", $tableName . ".message", $tableName . ".time");
@@ -549,21 +564,24 @@ class MainController extends Controller
 
             //本文と一言の処理
             for ($i=0; $i < count($postList); $i++) { 
+                if (property_exists($postList[$i], "name")) {
+                    //変換 名前
+                    $postList[$i]->name = str_replace("<", "&lt;", $postList[$i]->name);
+                    // $profile = preg_replace("/\r\n/", "\n", $profile);
+                }
                 if (property_exists($postList[$i], "body")) {
-                    //変換
+                    //変換 本文
                     $postList[$i]->body = str_replace("<", "&lt;", $postList[$i]->body);
                     // $profile = preg_replace("/\r\n/", "\n", $profile);
                 }
-                
                 if (property_exists($postList[$i], "message")) {
-                    //変換
+                    //変換 メッセージ
                     $postList[$i]->message = str_replace("<", "&lt;", $postList[$i]->message);
-
                 }
             }
             
             //順序を入れ替える 相談と新着以外
-            if ($postKbn != 'SOUDAN' && $page != -1) {
+            if ($postKbn != 'SOUDAN') {
                 $postList = $postList->reverse()->values();
             }
             // dd(preg_replace_array('/\?/', $query->getBindings(), $query->toSql()));
