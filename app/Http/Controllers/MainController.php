@@ -39,7 +39,7 @@ class MainController extends Controller
     //
     //広告情報取得
     //
-    public function getAbs(): JsonResponse {
+    public function getAbs(Request $request): JsonResponse {
         $json = file_get_contents("../resources/abs.json");
         $json = mb_convert_encoding($json, 'UTF8', 'ASCII,JIS,UTF-8,EUC-JP,SJIS-WIN');
         $arr = json_decode($json,true);
@@ -668,7 +668,6 @@ class MainController extends Controller
     //トップ画面用の全新着を取得
     //
     public function getLatestPostList (Request $request) {
-        dd($request->headers);
         $userId = $request->userId;
        
         $userId = $this->chkUserId($userId);
