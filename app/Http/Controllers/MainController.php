@@ -668,6 +668,7 @@ class MainController extends Controller
     //トップ画面用の全新着を取得
     //
     public function getLatestPostList (Request $request) {
+        dd($request->headers);
         $userId = $request->userId;
        
         $userId = $this->chkUserId($userId);
