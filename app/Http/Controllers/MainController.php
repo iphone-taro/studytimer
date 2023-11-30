@@ -420,7 +420,6 @@ class MainController extends Controller
                 'postKbn' => 'required|string',
                 'postId' => 'required|string',
                 'message' => 'required|string',
-                'userId' => 'required|string',
             ]);
         } catch (ValidationException $e) {
             return response()->json(['status' => Consts::API_FAILED_PARAM, 'errMsg' => $e->getMessage()]);
@@ -430,6 +429,9 @@ class MainController extends Controller
         $postId = $request->postId;
         $message = $request->message;
         $userId = $request->userId;
+        if ($userId == "") {
+            $userId = "no name";
+        }
 
         $tableName = Consts::retTableName($postKbn);
 
