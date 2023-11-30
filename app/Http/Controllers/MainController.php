@@ -249,7 +249,6 @@ class MainController extends Controller
         if (mb_strlen($secret) > 5) {
             return response()->json(['status' => Consts::API_FAILED_PARAM, 'errMsg' => "削除番号エラー"]);
         }
-        
         $userId = $this->chkUserId($userId);
         
         //運営設定
@@ -259,7 +258,8 @@ class MainController extends Controller
             $degree = 99;
         }
         //ランダム設定
-        if (strpos($nickName, "ランダム愛ふぉん太郎") == 0) {
+        $check = strpos($nickName, "ランダム愛ふぉん太郎");
+        if ($check === true && $check == 0) {
             $nickName = str_replace('ランダム愛ふぉん太郎', '', $nickName);
             $userId = $this->chkUserId("");
         }
