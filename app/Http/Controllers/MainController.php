@@ -20,6 +20,7 @@ use App\Models\Response;
 use App\Models\Sequence;
 use App\Models\Violation;
 use App\Models\Invisible;
+use DateTime;
 
 use Imagick;
 use ImagickDraw;
@@ -212,7 +213,7 @@ class MainController extends Controller
     //
     //
     public function insertPost (Request $request) {
-        
+
         //バリデート
         try {
             $validated = $request->validate([
@@ -348,10 +349,18 @@ class MainController extends Controller
                 $seqData->soudan_id = $newData->id;
                 $seqData->no = 1;
                 $seqData->save();
+
             } else if ($postKbn == "RESPONSE") {
                 $abc = \DB::table('sequences')
                 ->where('soudan_id', $soudanId)
                 ->increment('no');
+
+                $soudanData = Soudan::where('id', $soudanId)->first();
+
+                $currentDateTime = new DateTime();
+                $formattedDateTime = $currentDateTime->format('Y-m-d H:i:s');
+                $soudanData->response_at = $formattedDateTime;
+                $soudanData->save();
             }
 
             return response()->json(['status' => Consts::API_SUCCESS, 'userId' => $userId]);
@@ -468,7 +477,6 @@ class MainController extends Controller
         ->leftJoinSub($invisibleSub, 'invisibles', function ($join) use ($tableName) {
             $join->on('invisibles.user_id', '=', $tableName . '.user_id');
         })
-        ->orderBy($tableName . '.created_at', 'desc')
         ->whereIn('degree', $degreeArray)
         ->where('is_delete', 0)
         ->where(function($query) use ($userId) {
@@ -476,6 +484,13 @@ class MainController extends Controller
             ->orWhere('invisibles.user_id', "=", $userId);
         });
         
+        //順番
+        if ($postKbn == "SOUDAN") {
+            $query->orderBy($tableName . '.response_at', 'desc');
+            $query->orderBy($tableName . '.created_at', 'desc');
+        } else {
+            $query->orderBy($tableName . '.created_at', 'desc');
+        }
         //セレクト句
         if ($postKbn == "REPORT") {
             $query->select($tableName . ".id", $tableName . ".user_id", $tableName . ".name", $tableName . ".degree", $tableName . ".secret", $tableName . ".created_at", "stamp_sub1.stamp_count", "stamp_sub2.my_flg", $tableName . ".kbn", $tableName . ".title", $tableName . ".message", $tableName . ".time");
@@ -484,7 +499,7 @@ class MainController extends Controller
         } else if ($postKbn == "GUCHI") {
             $query->select($tableName . ".id", $tableName . ".user_id", $tableName . ".name", $tableName . ".degree", $tableName . ".secret", $tableName . ".created_at", "stamp_sub1.stamp_count", "stamp_sub2.my_flg", $tableName . ".body");
         } else if ($postKbn == "SOUDAN") {
-            $query->select($tableName . ".id", $tableName . ".user_id", $tableName . ".name", $tableName . ".degree", $tableName . ".secret", $tableName . ".created_at", $tableName . ".body");
+            $query->select($tableName . ".id", $tableName . ".user_id", $tableName . ".name", $tableName . ".degree", $tableName . ".secret", $tableName . ".created_at", $tableName . ".body", "res.res_count", "res.res_date");
         } else if ($postKbn == "RESPONSE") {
             $query->select($tableName . ".id", $tableName . ".user_id", $tableName . ".name", $tableName . ".degree", $tableName . ".secret", $tableName . ".created_at", "stamp_sub1.stamp_count", "stamp_sub2.my_flg", $tableName . ".body", $tableName . ".soudan_id");
         } else if ($postKbn == "NANDEMO") {
@@ -528,6 +543,7 @@ class MainController extends Controller
             $queryResSub = \DB::table('responses')
             ->select('soudan_id')
             ->selectRaw('count(*) as res_count')
+            ->selectRaw('MAX(created_at) as res_date')
             ->groupBy('soudan_id');
 
             $query->leftJoinSub($queryResSub, 'res', function ($join) use ($tableName) {

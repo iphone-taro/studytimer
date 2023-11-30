@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('secret')->default("");
             $table->integer('is_delete')->default(0);
             $table->string('info');
+            $table->timestamp('response_at');
             $table->timestamps();
         });
     }
