@@ -42,5 +42,5 @@ Route::get('/api/test', [MainController::class, 'test']);
 Route::get('/{code}', [MainController::class, 'access']);
 
 Route::get('/{any}', function () {
-    return view('spa.app')->with(['title' => "なにもなし", 'card' => "card_common"]);
+    return view('spa.app')->with(['title' => "なにもなし", 'card' => "base.jpg"]);
 })->where('any', '.*');
