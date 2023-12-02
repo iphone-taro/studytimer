@@ -297,6 +297,9 @@ class MainController extends Controller
             $newData = new Guchi();
         } else if ($postKbn == "SOUDAN") {
             $newData = new Soudan();
+            $currentDateTime = new DateTime();
+            $formattedDateTime = $currentDateTime->format('Y-m-d H:i:s');
+            $newData->response_at = $formattedDateTime;
         } else if ($postKbn == "NANDEMO") {
             $newData = new Nandemo();
         } else if ($postKbn == "RESPONSE") {
