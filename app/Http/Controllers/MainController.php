@@ -20,6 +20,7 @@ use App\Models\Response;
 use App\Models\Sequence;
 use App\Models\Violation;
 use App\Models\Invisible;
+use App\Models\Access;
 use DateTime;
 
 use Imagick;
@@ -692,6 +693,21 @@ class MainController extends Controller
         $userId = $request->userId;
        
         $userId = $this->chkUserId($userId);
+
+        //アクセスカウント
+        $currentDateTime = new DateTime();
+        $formattedDateTime = $currentDateTime->format('Y-m-d');
+        $dateData = Access::where('date', $formattedDateTime)->first();
+        if ($dateData == null) {
+            //新規
+            $dateData = new Access();
+            $dateData->date = $formattedDateTime;
+            $dateData->save();
+        } else {
+            //1追加
+            $dateData->count = $dateData->count() + 1;
+            $dateData->save();
+        }
 
         $request->postKbn = "REPORT";
         $reportList = $this->retPostList($request, $userId, true);
