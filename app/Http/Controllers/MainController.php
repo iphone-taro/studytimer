@@ -37,7 +37,7 @@ class MainController extends Controller
         $aaa = preg_replace("/(\R{3,})/u", "\n\n", $text);
         dd($aaa);
     }
-
+    
     //
     //広告情報取得
     //
@@ -639,6 +639,7 @@ class MainController extends Controller
     //一覧取得
     //
     public function getPostList (Request $request) {
+        
         $userId = $request->userId;
         
         $userId = $this->chkUserId($userId);

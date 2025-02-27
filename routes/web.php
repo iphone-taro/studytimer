@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\SukiController;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
@@ -16,6 +17,7 @@ use App\Consts\Consts;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::post('/api/suki', [SukiController::class, 'suki']);
 Route::get('/api/abc', [MainController::class, 'abc']);
 Route::post('/api/getViolationList', [MainController::class, 'getViolationList']);
 Route::post('/api/updateThrowMgr', [MainController::class, 'updateThrowMgr']);
