@@ -18,6 +18,9 @@ use App\Consts\Consts;
 |
 */
 Route::post('/api/suki', [SukiController::class, 'suki']);
+Route::post('/api/getList', [SukiController::class, 'getList']);
+Route::post('/api/getGoodsList', [SukiController::class, 'getGoodsList']);
+
 Route::get('/api/abc', [MainController::class, 'abc']);
 Route::post('/api/getViolationList', [MainController::class, 'getViolationList']);
 Route::post('/api/updateThrowMgr', [MainController::class, 'updateThrowMgr']);

@@ -4,9 +4,54 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SkTimeStamp;
+use Illuminate\Support\Facades\DB;
+use DateTime;
 
-class SukiController extends Controller
-{
+class SukiController extends Controller {
+    public function getGoodsList(Request $request) {
+        $goodsList = DB::table('sk_goods')->where('deleted', 1)->orderBy('place', 'desc')->get();
+
+        return response()->json([
+            'goodsList' => $goodsList,
+        ]);
+    }
+
+    public function getList(Request $request) {
+        //パラメータの取得
+        $date = $request->date;
+
+        //初期取得 現在日付から2日間取得
+        $targetDate = new DateTime();
+        if ($date != null) {
+            //指定日付 その日の前日から2日間取得
+            $targetDate = new DateTime($date);
+            $targetDate->modify('-1 day');
+        }
+
+        // 現在日時の23時59分59秒のDateTimeオブジェクトを作成
+        $endOfDay = clone $targetDate;
+        $endOfDay->setTime(23, 59, 59);
+
+        // 前日の0時00分00秒のDateTimeオブジェクトを作成
+        $startOfYesterday = clone $targetDate;
+        $startOfYesterday->modify('-1 day');
+        $startOfYesterday->setTime(0, 0, 0);
+
+        // 文字列に変換
+        $endOfDayString = $endOfDay->format('Y-m-d H:i:s');
+        $startOfYesterdayString = $startOfYesterday->format('Y-m-d H:i:s');
+
+        $sukiList = DB::table('sk_time_stamps')
+            ->where('created_at', '>=', $startOfYesterdayString)
+            ->where('created_at', '<', $endOfDayString)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'sukiList' => $sukiList,
+        ]);
+    }
+
     public function suki (Request $request) {
         $url = "https://suki-kira.com/people/result/%E3%81%97%E3%82%87%E3%81%BC%E3%81%99%E3%81%91";
 

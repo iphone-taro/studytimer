@@ -20,6 +20,7 @@
         "vue-scrollto": "^2.20.0"
     },
     "dependencies": {
+        "vue-slide-up-down": "^3.0.0",
         "vuedraggable": "^4.1.0"
     }
 }

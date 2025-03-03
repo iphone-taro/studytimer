@@ -9,6 +9,17 @@ class Schedule {
     // cd /home/iphone-taro/Laravel/studytimerpj && /usr/local/bin/php artisan schedule:run 1> /dev/null
 
     public function __invoke() {
+        // // 現在時刻を取得
+        // $now = new DateTime();
+
+        // // 17時と翌日5時のDateTimeオブジェクトを作成
+        // $start = new DateTime('17:00');
+        // $end = new DateTime('05:00 tomorrow');
+
+        // // 現在時刻が17時から翌日5時の間にあるか確認
+        // if ($now >= $start || $now < $end) {
+        // }
+        
         $url = "https://suki-kira.com/people/result/%E3%81%97%E3%82%87%E3%81%BC%E3%81%99%E3%81%91";
 
         // cURLセッションの初期化
