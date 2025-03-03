@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('sk_goods', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
-            $table->integer('place', 2)->default(99);
-            $table->integer('deleted', 1)->default(1);
+            $table->integer('place')->default(99);
+            $table->integer('deleted')->default(1);
             $table->string('kbn')->default("");
             $table->string('name')->default("");
             $table->string('url')->default("");
