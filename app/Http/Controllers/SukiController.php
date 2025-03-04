@@ -21,22 +21,17 @@ class SukiController extends Controller {
         $date = $request->date;
 
         //初期取得 現在日付から2日間取得
-        $targetDate = new DateTime();
-        if ($date != null) {
-            //指定日付 その日の前日から2日間取得
-            $targetDate = new DateTime($date);
-            $targetDate->modify('-1 day');
-        }
-
-        // 現在日時の23時59分59秒のDateTimeオブジェクトを作成
-        $endOfDay = clone $targetDate;
-        $endOfDay->setTime(23, 59, 59);
-
-        // 前日の0時00分00秒のDateTimeオブジェクトを作成
+        $targetDate = new DateTime($request->date);
+        
+        //17より前
         $startOfYesterday = clone $targetDate;
         $startOfYesterday->modify('-1 day');
-        $startOfYesterday->setTime(0, 0, 0);
+        $startOfYesterday->setTime(17, 0, 0);
 
+        $endOfDay = clone $targetDate;
+        $endOfDay->modify('+1 day');
+        $endOfDay->setTime(16, 59, 59);
+        
         // 文字列に変換
         $endOfDayString = $endOfDay->format('Y-m-d H:i:s');
         $startOfYesterdayString = $startOfYesterday->format('Y-m-d H:i:s');
@@ -49,6 +44,8 @@ class SukiController extends Controller {
 
         return response()->json([
             'sukiList' => $sukiList,
+            'st' => $startOfYesterday,
+            'ed' => $endOfDay,
         ]);
     }
 

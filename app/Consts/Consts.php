@@ -122,6 +122,9 @@ class Consts
 
 
 
-
+    public const API_KEY = "U7fD4ME0m64wTDDmn8AUQIBB3";
+    public const API_KEY_SECRET = "yOaWX7igIjFIufeBDWaAvC1C7xrmAxM3liVFlsTp4T9qT7bhuc";
+    public const ACCESS_TOKEN = "1790402212050690049-xywsbFyqIlatGOIwvLdbv6TClFueih";
+    public const ACCESS_TOKEN_SECRET = "gRTGccNVR0tyxqGfNrVLUBayzsya48ogSmVw83Yaw0mwO";
 
 }
