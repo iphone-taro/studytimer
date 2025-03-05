@@ -52,8 +52,8 @@ class Schedule {
         $res = $newData->save();
 
         //起動時が5時かどうか
-        $chStart = new DateTime('05:02:00');
-        $chEnd = new DateTime('05:04:00');
+        $chStart = new DateTime('16:20:00');
+        $chEnd = new DateTime('16:22:00');
 
         if ($chStart <= $now && $now < $chEnd) {
             echo "YES\n";
@@ -100,28 +100,20 @@ class Schedule {
             //投稿文
             $tweetText =
             "꙳✧˖°⌖꙳✧˖°⌖꙳✧˖°⌖꙳✧˖°⌖꙳✧˖°\n" . 
-            "\n" . 
             "  " . $month . "月" . $day . "日の ストグラフ  \n" .
-            "\n" . 
             "꙳✧˖°⌖꙳✧˖°⌖꙳✧˖°⌖꙳✧˖°⌖꙳✧˖°\n" .
-            "\n" . 
             "\n" . 
             "本日のストグラでイチバン「好き嫌い.com」が盛り上がったのは！？\n" .
             "\n" .
-            "2分間で" . $maxCount . "投稿あった\n" . 
-            "\n" .
-            "＼＼＼｜｜｜｜／／／\n" .
-            "\n" .
-            "     " . $hour . "時" . $minute . "分\n" . 
-            "\n" .
-            "／／／｜｜｜｜＼＼＼\n" .
+            "    【 " . $hour . "時" . $minute . "分 】（" . $maxCount . "投稿/2分間）\n" . 
             "\n" .
             "でしたー！\n" .
             "#ストグラ #ストグラフ\n" .
             "\n" .
-            "↓↓↓↓↓詳しくはこちら↓↓↓↓↓\n" .
+            "詳しくはこちら\n" .
             "https://sutograph.net";
 
+            echo $tweetText;
             //投稿処理
             $connection = new TwitterOAuth(
             Consts::API_KEY,
@@ -139,15 +131,14 @@ class Schedule {
             $httpCode = $connection->getLastHttpCode();
 
             // if ($httpCode == 201) { // 201は作成成功を示すステータスコード
+            //     echo "success";
             //     $this->info("ツイートが送信されました！");
             // } else {
             //     $errorMessage=isset($result->errors) ?json_encode($result->errors, JSON_UNESCAPED_UNICODE) :'不明なエラー';
-            //     $this->error("ツイートの送信に失敗しました。HTTPコード: $httpCode, エラーメッセージ: $errorMessage");
+            //     echo "ツイートの送信に失敗しました。HTTPコード:" . $httpCode . ", エラーメッセージ:" .$errorMessage;
             // }
         } else {
             echo "NO\n";
-
-
         }
     }
 }
