@@ -114,6 +114,7 @@ class Schedule {
             "https://sutograph.net";
 
             echo $tweetText;
+            $tweetText = "abc";
             //投稿処理
             $connection = new TwitterOAuth(
             Consts::API_KEY,
