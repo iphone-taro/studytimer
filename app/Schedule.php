@@ -100,7 +100,7 @@ class Schedule {
             //投稿文
             $tweetText =
             "꙳✧˖°⌖꙳✧˖°⌖꙳✧˖°⌖꙳✧˖°⌖꙳✧˖°\n" . 
-            "  " . $month . "月" . $day . "日の ストグラフ  \n" .
+            "  " . $month . "月" . $day . "日の ストグラフ\n" .
             "꙳✧˖°⌖꙳✧˖°⌖꙳✧˖°⌖꙳✧˖°⌖꙳✧˖°\n" .
             "\n" . 
             "本日のストグラでイチバン「好き嫌い.com」が盛り上がったのは！？\n" .
@@ -129,7 +129,7 @@ class Schedule {
             $result = $connection->post("tweets", ["text"=>$tweetText], ['jsonPayload'=>true]);
 
             $httpCode = $connection->getLastHttpCode();
-
+            echo "IN";
             if ($httpCode == 201) { // 201は作成成功を示すステータスコード
                 echo "success";
                 $this->info("ツイートが送信されました！");
