@@ -52,8 +52,10 @@ class Schedule {
         $res = $newData->save();
 
         //起動時が5時かどうか
-        $chStart = new DateTime('05:00:00');
-        $chEnd = new DateTime('05:02:00');
+        $chStart = new DateTime('08:06:00');
+        $chEnd = new DateTime('08:08:00');
+        // $chStart = new DateTime('05:00:00');
+        // $chEnd = new DateTime('05:02:00');
 
         if ($chStart <= $now && $now < $chEnd) {
             echo "YES\n";
