@@ -52,8 +52,8 @@ class Schedule {
         $res = $newData->save();
 
         //起動時が5時かどうか
-        $chStart = new DateTime('16:20:00');
-        $chEnd = new DateTime('16:22:00');
+        $chStart = new DateTime('16:28:00');
+        $chEnd = new DateTime('16:30:00');
 
         if ($chStart <= $now && $now < $chEnd) {
             echo "YES\n";
@@ -130,13 +130,13 @@ class Schedule {
 
             $httpCode = $connection->getLastHttpCode();
 
-            // if ($httpCode == 201) { // 201は作成成功を示すステータスコード
-            //     echo "success";
-            //     $this->info("ツイートが送信されました！");
-            // } else {
-            //     $errorMessage=isset($result->errors) ?json_encode($result->errors, JSON_UNESCAPED_UNICODE) :'不明なエラー';
-            //     echo "ツイートの送信に失敗しました。HTTPコード:" . $httpCode . ", エラーメッセージ:" .$errorMessage;
-            // }
+            if ($httpCode == 201) { // 201は作成成功を示すステータスコード
+                echo "success";
+                $this->info("ツイートが送信されました！");
+            } else {
+                $errorMessage=isset($result->errors) ?json_encode($result->errors, JSON_UNESCAPED_UNICODE) :'不明なエラー';
+                echo "ツイートの送信に失敗しました。HTTPコード:" . $httpCode . ", エラーメッセージ:" .$errorMessage;
+            }
         } else {
             echo "NO\n";
         }
