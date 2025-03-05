@@ -52,8 +52,8 @@ class Schedule {
         $res = $newData->save();
 
         //起動時が5時かどうか
-        $chStart = new DateTime('16:44:00');
-        $chEnd = new DateTime('16:46:00');
+        $chStart = new DateTime('05:00:00');
+        $chEnd = new DateTime('05:02:00');
 
         if ($chStart <= $now && $now < $chEnd) {
             echo "YES\n";
@@ -75,7 +75,7 @@ class Schedule {
             $curNo = 0;
             $maxCount = 0;
             $maxDate = null;
-            echo count($sukiList) . "\n";
+            // echo count($sukiList) . "\n";
 
             foreach ($sukiList as $data) {
                 if ($curNo != 0) {
@@ -88,8 +88,8 @@ class Schedule {
                 }
                 $curNo = $data->no;
             }
-            echo "max " . $maxCount . "\n";
-            echo "time " . $maxDate . "\n";
+            // echo "max " . $maxCount . "\n";
+            // echo "time " . $maxDate . "\n";
             
             $maxDateDate = new DateTime($maxDate);
             $month = $maxDateDate->format('n');
@@ -113,7 +113,6 @@ class Schedule {
             "詳しくはこちら\n" .
             "https://sutograph.net";
 
-            echo $tweetText;
             //投稿処理
             $connection = new TwitterOAuth(
             Consts::API_KEY,
@@ -129,14 +128,7 @@ class Schedule {
             $result = $connection->post("tweets", ["text"=>$tweetText], ['jsonPayload'=>true]);
 
             $httpCode = $connection->getLastHttpCode();
-            echo "IN";
-            if ($httpCode == 201) { // 201は作成成功を示すステータスコード
-                echo "success";
-                $this->info("ツイートが送信されました！");
-            } else {
-                $errorMessage=isset($result->errors) ?json_encode($result->errors, JSON_UNESCAPED_UNICODE) :'不明なエラー';
-                echo "ツイートの送信に失敗しました。HTTPコード:" . $httpCode . ", エラーメッセージ:" .$errorMessage;
-            }
+
         } else {
             echo "NO\n";
         }
