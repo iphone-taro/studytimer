@@ -52,8 +52,8 @@ class Schedule {
         $res = $newData->save();
 
         //起動時が5時かどうか
-        $chStart = new DateTime('16:32:00');
-        $chEnd = new DateTime('16:34:00');
+        $chStart = new DateTime('16:34:00');
+        $chEnd = new DateTime('16:36:00');
 
         if ($chStart <= $now && $now < $chEnd) {
             echo "YES\n";
@@ -105,7 +105,7 @@ class Schedule {
             "\n" . 
             "本日のストグラでイチバン「好き嫌い.com」が盛り上がったのは！？\n" .
             "\n" .
-            "    【 " . $hour . "時" . $minute . "分 】（" . $maxCount . "投稿/2分間）\n" . 
+            "    【 " . $hour . "時" . $minute . "分 】\n" . 
             "\n" .
             "でしたー！\n" .
             "#ストグラ #ストグラフ\n" .
