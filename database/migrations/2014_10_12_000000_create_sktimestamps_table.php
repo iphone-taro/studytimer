@@ -11,10 +11,11 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up() 
     {
         Schema::create('sk_time_stamps', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
+            $table->integer('kbn')->default(0);
             $table->integer('no')->default(0);
             $table->timestamps();
         });

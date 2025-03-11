@@ -19,6 +19,7 @@ class SukiController extends Controller {
     public function getList(Request $request) {
         //パラメータの取得
         $date = $request->date;
+        $kbn = $request->kbn;
 
         //初期取得 現在日付から2日間取得
         $targetDate = new DateTime($request->date);
@@ -37,6 +38,7 @@ class SukiController extends Controller {
         $startOfYesterdayString = $startOfYesterday->format('Y-m-d H:i:s');
 
         $sukiList = DB::table('sk_time_stamps')
+            ->where('kbn', $kbn)
             ->where('created_at', '>=', $startOfYesterdayString)
             ->where('created_at', '<', $endOfDayString)
             ->orderBy('created_at', 'desc')
