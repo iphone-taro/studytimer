@@ -219,7 +219,7 @@ class Schedule {
             "#ストグラ #ストグラフ #ノーリミ\n" .
             "\n" .
             "詳しくはこちら\n" .
-            "https://sutograph.net/nolimit";
+            "https://sutograph.net/fanta";
 
             //投稿処理
             $connection = new TwitterOAuth(
