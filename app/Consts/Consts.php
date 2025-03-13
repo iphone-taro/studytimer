@@ -122,9 +122,10 @@ class Consts
 
 
 
-    public const API_KEY = "U7fD4ME0m64wTDDmn8AUQIBB3";
-    public const API_KEY_SECRET = "yOaWX7igIjFIufeBDWaAvC1C7xrmAxM3liVFlsTp4T9qT7bhuc";
-    public const ACCESS_TOKEN = "1790402212050690049-xywsbFyqIlatGOIwvLdbv6TClFueih";
-    public const ACCESS_TOKEN_SECRET = "gRTGccNVR0tyxqGfNrVLUBayzsya48ogSmVw83Yaw0mwO";
-
+    public const API_KEY = "LWALRPsGjhDe02wP7E6D0GxBv";
+    public const API_KEY_SECRET = "XpCejTMpZnkzC37ak8MqCJMUZePRvkBTdqYSjhaH47M21DkoRq";
+    public const ACCESS_TOKEN = "1900058157218734080-e2MWchwjlky7jyhmucikhCeXOmYJS2";
+    public const ACCESS_TOKEN_SECRET = "idYHTR1So9CcF6zySCx7phwK6u4PEaaumM5kXJxy011o8";
+    public const CLIENT_ID = "TTlrQVpuZ2F5RGlPRUpxeVJSRFE6MTpjaQ";
+    public const CLIENT_SECRET = "hD88OVNnaPKj4bbMuokTV70eKG9xrmBtilrn8KnAu24vh98oJL";
 }
