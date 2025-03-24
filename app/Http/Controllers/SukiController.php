@@ -135,4 +135,45 @@ class SukiController extends Controller {
 
         // return "AAA";
     }
+
+    public function getMonitorInfo(Request $request) {
+        // 現在時刻を取得
+        $currentTime = new DateTime();
+        $hour = (int)$currentTime->format('H');
+
+        // 開始時刻と終了時刻の初期化
+        $startTime = clone $currentTime;
+        $endTime = clone $currentTime;
+
+        // 17時前後の条件分岐
+        if ($hour < 17) {
+            // 17時前の場合、前日の17時から当日の17時まで
+            $startTime->modify('-1 day')->setTime(17, 0, 0);
+            $endTime->setTime(17, 0, 0);
+        } else {
+            // 17時以降の場合、当日の17時から現在まで
+            $startTime->setTime(17, 0, 0);
+        }
+
+        // sk_time_stampsテーブルからデータを取得
+        $shoboList = DB::table('sk_time_stamps')
+        ->where('kbn', 0)
+        ->where('created_at', '>=', $startTime)
+        ->where('created_at', '<', $endTime)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        $fantaList = DB::table('sk_time_stamps')
+        ->where('kbn', 1)
+        ->where('created_at', '>=', $startTime)
+        ->where('created_at', '<', $endTime)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        // 結果をJSON形式で返す
+        return response()->json([
+            'shoboList' => $shoboList,
+            'fantaList' => $fantaList
+        ]);
+    }
 }

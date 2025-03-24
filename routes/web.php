@@ -17,6 +17,7 @@ use App\Consts\Consts;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::post('/api/getMonitorInfo', [SukiController::class, 'getMonitorInfo']);
 Route::post('/api/suki', [SukiController::class, 'suki']);
 Route::post('/api/getList', [SukiController::class, 'getList']);
 Route::post('/api/getGoodsList', [SukiController::class, 'getGoodsList']);
