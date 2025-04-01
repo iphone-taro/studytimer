@@ -89,6 +89,11 @@ class Schedule {
         $chEnd1 = new DateTime('05:02:00');
         $chStart2 = new DateTime('05:30:00');
         $chEnd2 = new DateTime('05:32:00');
+        
+        $chMiddleStart1 = new DateTime('23:00:00');
+        $chMiddleEnd1 = new DateTime('23:02:00');
+        $chMiddleStart2 = new DateTime('23:14:00');
+        $chMiddleEnd2 = new DateTime('23:16:00');
         if ($chStart1 <= $now && $now < $chEnd1) {
             echo "YES\n";
 
@@ -212,6 +217,152 @@ class Schedule {
             "❀✿  " . $month . "月" . $day . "日の ストグラフ  ✿❀\n" .
             "\n" . 
             "本日のストグラでイチバン「好き嫌い.com」（ノーリミ、ファン太板）が盛り上がったのは！？\n" .
+            "\n" .
+            "【 " . $hour . "時" . $minute . "分 】（" . $maxCount . "投稿/2分間）\n" . 
+            "\n" .
+            "でしたー！\n" .
+            "#ストグラ #ストグラフ #ノーリミ\n" .
+            "\n" .
+            "詳しくはこちら\n" .
+            "https://sutograph.net/nolimit";
+
+            //投稿処理
+            $connection = new TwitterOAuth(
+            Consts::API_KEY,
+            Consts::API_KEY_SECRET,
+            Consts::ACCESS_TOKEN,
+            Consts::ACCESS_TOKEN_SECRET
+            );
+
+            $connection->setApiVersion('2');
+
+            // $text = "Twitter APIテストです。";
+
+            $result = $connection->post("tweets", ["text"=>$tweetText], ['jsonPayload'=>true]);
+
+            $httpCode = $connection->getLastHttpCode();
+
+        } else if ($chMiddleStart1 <= $now && $now < $chMiddleEnd1) {
+            echo "YES\n";
+
+            $getStart = new DateTime();
+            $getStart->setTime(17, 0, 0);
+
+            $getEnd = new DateTime();
+            $getEnd->setTime(23, 0, 0);
+
+            //稼働時間の情報を取得
+            $sukiList = DB::table('sk_time_stamps')
+            ->where('created_at', '>=', $getStart)
+            ->where('created_at', '<=', $getEnd)
+            ->where('kbn', 0)
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+            $curNo = 0;
+            $maxCount = 0;
+            $maxDate = null;
+            // echo count($sukiList) . "\n";
+
+            foreach ($sukiList as $data) {
+                if ($curNo != 0) {
+                    $count = $curNo - $data->no;
+
+                    if ($maxCount < $count) {
+                        $maxCount = $count;
+                        $maxDate = $data->created_at;
+                    }
+                }
+                $curNo = $data->no;
+            }
+            // echo "max " . $maxCount . "\n";
+            // echo "time " . $maxDate . "\n";
+            
+            $month = $getStart->format('n');
+            $day = $getStart->format('j');
+            
+            $maxDateDate = new DateTime($maxDate);
+            $hour = $maxDateDate->format('H'); // 24時間形式の時
+            $minute = $maxDateDate->format('i'); // 分
+
+            //投稿文
+            $tweetText =
+            "❀✿  " . $month . "月" . $day . "日の ストグラフ  ✿❀\n" .
+            "\n" . 
+            "現在までのストグラでイチバン「好き嫌い.com」（しょぼ板）が盛り上がったのは！？\n" .
+            "\n" .
+            "【 " . $hour . "時" . $minute . "分 】（" . $maxCount . "投稿/2分間）\n" . 
+            "\n" .
+            "でしたー！\n" .
+            "#ストグラ #ストグラフ\n" .
+            "\n" .
+            "詳しくはこちら\n" .
+            "https://sutograph.net";
+
+            //投稿処理
+            $connection = new TwitterOAuth(
+            Consts::API_KEY,
+            Consts::API_KEY_SECRET,
+            Consts::ACCESS_TOKEN,
+            Consts::ACCESS_TOKEN_SECRET
+            );
+
+            $connection->setApiVersion('2');
+
+            // $text = "Twitter APIテストです。";
+
+            $result = $connection->post("tweets", ["text"=>$tweetText], ['jsonPayload'=>true]);
+
+            $httpCode = $connection->getLastHttpCode();
+
+        } else if ($chMiddleStart2 <= $now && $now < $chMiddleEnd2) {
+            echo "YES\n";
+
+            $getStart = new DateTime();
+            $getStart->setTime(17, 0, 0);
+
+            $getEnd = new DateTime();
+            $getEnd->setTime(23, 14, 0);
+
+            //稼働時間の情報を取得
+            $sukiList = DB::table('sk_time_stamps')
+            ->where('created_at', '>=', $getStart)
+            ->where('created_at', '<=', $getEnd)
+            ->where('kbn', 1)
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+            $curNo = 0;
+            $maxCount = 0;
+            $maxDate = null;
+            // echo count($sukiList) . "\n";
+
+            foreach ($sukiList as $data) {
+                if ($curNo != 0) {
+                    $count = $curNo - $data->no;
+
+                    if ($maxCount < $count) {
+                        $maxCount = $count;
+                        $maxDate = $data->created_at;
+                    }
+                }
+                $curNo = $data->no;
+            }
+            // echo "max " . $maxCount . "\n";
+            // echo "time " . $maxDate . "\n";
+            
+            $month = $getStart->format('n');
+            $day = $getStart->format('j');
+            
+            $maxDateDate = new DateTime($maxDate);
+            $hour = $maxDateDate->format('H'); // 24時間形式の時
+            $minute = $maxDateDate->format('i'); // 分
+
+            //投稿文
+            $tweetText =
+            "❀✿  " . $month . "月" . $day . "日の ストグラフ  ✿❀\n" .
+            "\n" . 
+            "現在までのストグラでイチバン「好き嫌い.com」（ノーリミ、ファン太板）が盛り上がったのは！？\n" .
             "\n" .
             "【 " . $hour . "時" . $minute . "分 】（" . $maxCount . "投稿/2分間）\n" . 
             "\n" .
