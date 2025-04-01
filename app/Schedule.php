@@ -142,7 +142,7 @@ class Schedule {
             "【 " . $hour . "時" . $minute . "分 】（" . $maxCount . "投稿/2分間）\n" . 
             "\n" .
             "でしたー！\n" .
-            // "#ストグラ #ストグラフ\n" .
+            "#ストグラ #ストグラフ\n" .
             "\n" .
             "詳しくはこちら\n" .
             "https://sutograph.net";
@@ -216,7 +216,7 @@ class Schedule {
             "【 " . $hour . "時" . $minute . "分 】（" . $maxCount . "投稿/2分間）\n" . 
             "\n" .
             "でしたー！\n" .
-            // "#ストグラ #ストグラフ #ノーリミ\n" .
+            "#ストグラ #ストグラフ #ノーリミ\n" .
             "\n" .
             "詳しくはこちら\n" .
             "https://sutograph.net/nolimit";
