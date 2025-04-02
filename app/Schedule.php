@@ -96,7 +96,7 @@ class Schedule {
         $chMiddleEnd2 = new DateTime('23:16:00');
         if ($chStart1 <= $now && $now < $chEnd1) {
             echo "YES\n";
-
+            
             $getStart = new DateTime();
             $getStart->modify("-1 day");
             $getStart->setTime(17, 0, 0);
@@ -146,11 +146,13 @@ class Schedule {
             "\n" .
             "【 " . $hour . "時" . $minute . "分 】（" . $maxCount . "投稿/2分間）\n" . 
             "\n" .
-            "でしたー！\n" .
-            "#ストグラ #ストグラフ\n" .
-            "\n" .
-            "詳しくはこちら\n" .
-            "https://sutograph.net";
+            "でしたー！\n"
+            //  .
+            // "#ストグラ #ストグラフ\n" .
+            // "\n" .
+            // "詳しくはこちら\n" .
+            // "https://sutograph.net"
+            ;
 
             //投稿処理
             $connection = new TwitterOAuth(
@@ -220,11 +222,13 @@ class Schedule {
             "\n" .
             "【 " . $hour . "時" . $minute . "分 】（" . $maxCount . "投稿/2分間）\n" . 
             "\n" .
-            "でしたー！\n" .
-            "#ストグラ #ストグラフ #ノーリミ\n" .
-            "\n" .
-            "詳しくはこちら\n" .
-            "https://sutograph.net/nolimit";
+            "でしたー！\n"
+            //  .
+            // "#ストグラ #ストグラフ #ノーリミ\n" .
+            // "\n" .
+            // "詳しくはこちら\n" .
+            // "https://sutograph.net/nolimit"
+            ;
 
             //投稿処理
             $connection = new TwitterOAuth(
@@ -293,11 +297,13 @@ class Schedule {
             "\n" .
             "【 " . $hour . "時" . $minute . "分 】（" . $maxCount . "投稿/2分間）\n" . 
             "\n" .
-            "でしたー！\n" .
-            "#ストグラ #ストグラフ\n" .
-            "\n" .
-            "詳しくはこちら\n" .
-            "https://sutograph.net";
+            "でしたー！\n"
+            //  .
+            // "#ストグラ #ストグラフ\n" .
+            // "\n" .
+            // "詳しくはこちら\n" .
+            // "https://sutograph.net"
+            ;
 
             //投稿処理
             $connection = new TwitterOAuth(
@@ -366,11 +372,13 @@ class Schedule {
             "\n" .
             "【 " . $hour . "時" . $minute . "分 】（" . $maxCount . "投稿/2分間）\n" . 
             "\n" .
-            "でしたー！\n" .
-            "#ストグラ #ストグラフ #ノーリミ\n" .
-            "\n" .
-            "詳しくはこちら\n" .
-            "https://sutograph.net/nolimit";
+            "でしたー！\n"
+            //  .
+            // "#ストグラ #ストグラフ #ノーリミ\n" .
+            // "\n" .
+            // "詳しくはこちら\n" .
+            // "https://sutograph.net/nolimit"
+            ;
 
             //投稿処理
             $connection = new TwitterOAuth(
