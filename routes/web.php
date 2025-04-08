@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\SukiController;
-use App\Http\Controllers\ShikuController;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
@@ -47,11 +46,6 @@ Route::get('/api/getAbs', [MainController::class, 'getAbs']);
 Route::get('/api/test', [MainController::class, 'test']);
 
 Route::get('/{code}', [MainController::class, 'access']);
-
-//市区町村用API
-Route::post('/api/shiku_init', [ShikuController::class, 'init']);
-Route::post('/api/shiku_regist', [ShikuController::class, 'regist']);
-Route::post('/api/shiku_clear', [ShikuController::class, 'clear']);
 
 Route::get('/{any}', function () {
     return view('spa.app')->with(['title' => "なにもなし", 'card' => "base.jpg"]);
