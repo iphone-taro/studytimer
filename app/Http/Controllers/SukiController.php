@@ -9,7 +9,7 @@ use DateTime;
 
 class SukiController extends Controller {
     public function getGoodsList(Request $request) {
-        $goodsList = DB::table('sk_goods')->where('deleted', 1)->orderBy('place', 'desc')->get();
+        $goodsList = DB::table('sk_goods')->where('deleted', 1)->where('kbn', 1)->orderBy('place', 'desc')->get();
 
         return response()->json([
             'goodsList' => $goodsList,
@@ -44,10 +44,22 @@ class SukiController extends Controller {
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $goodsList = null;
+        if ($request->isInit == 1) {
+            $goodsKbn = 0;
+            if ($kbn == 0) {
+                $goodsKbn = 2;
+            } else {
+                $goodsKbn = 3;
+            }
+
+            $goodsList = DB::table('sk_goods')->where('deleted', 1)->where('kbn', $goodsKbn)->orderBy('place', 'desc')->get();
+        } 
         return response()->json([
             'sukiList' => $sukiList,
             'st' => $startOfYesterday,
             'ed' => $endOfDay,
+            'goodsList' => $goodsList,
         ]);
     }
 
